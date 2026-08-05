@@ -20,8 +20,8 @@ public class RoomService {
     }
 
     public ResponseEntity<?> createRoom(String roomId) {
-        if (roomRepository.findRoomByRoomId(roomId).isPresent()){
-            return ResponseEntity.badRequest().body("Room Not Found!!");
+        if (roomRepository.findByRoomId(roomId).isPresent()){
+            return ResponseEntity.badRequest().body("Room Id is Already There!!");
         }
 
         Room room = Room.builder().roomId(roomId).build();
@@ -31,7 +31,7 @@ public class RoomService {
     }
 
     public ResponseEntity<?> joinRoom(String roomId) {
-        Optional<Room> room = roomRepository.findById(roomId);
+        Optional<Room> room = roomRepository.findByRoomId(roomId);
         if (room.isEmpty()){
             return ResponseEntity.badRequest().body("Room Not Found!!");
         }
@@ -40,7 +40,7 @@ public class RoomService {
     }
 
     public ResponseEntity<List<Message>> getMessages(String roomId){
-        Room room = roomRepository.findById(roomId).orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Room Not Found"));
+        Room room = roomRepository.findByRoomId(roomId).orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Room Not Found"));
          return ResponseEntity.ok(room.getMessages());
     }
 }
