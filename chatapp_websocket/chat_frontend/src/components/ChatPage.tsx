@@ -4,7 +4,7 @@ import useChatContext from "../context/ChatContext";
 import { useNavigate } from "react-router";
 import SockJS from "sockjs-client";
 import { BASE_URL } from "../apis.Axios";
-import { Stomp } from "@stomp/stompjs";
+import { CompatClient, Stomp } from "@stomp/stompjs";
 import { toast } from "react-toastify";
 
 interface Message {
@@ -16,15 +16,9 @@ interface Message {
 }
 const ChatPage = () => {
     const { roomId, connected, currentUser } = useChatContext();
-
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            content: "Hello ?",
-            sender: "Sameer",
-        },
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>("");
-    const [stompClient, setStompClient] = useState<unknown>(null);
+    const stompClient = useRef<CompatClient | null>(null);
     const inputRef = useRef(null);
     const chatBoxRef = useRef(null);
     const navigate = useNavigate();
@@ -36,23 +30,47 @@ const ChatPage = () => {
     }, [connected]);
 
     const connectWebSocket = () => {
+        if (!roomId) return;
+
         // SockJS
         const sock = new SockJS(`${BASE_URL}/chat`);
         const client = Stomp.over(sock);
+
+        stompClient.current = client;
+
         client.connect({}, () => {
-            setStompClient(client);
             toast.success("Connected to chat!");
 
             client.subscribe(`/topic/room/${roomId}`, (message: any) => {
                 const newMessage = JSON.parse(message.body);
-                setMessages((...prev) => [...prev, newMessage]);
+                setMessages((prev) => [...prev, newMessage]);
             });
         });
     };
 
     useEffect(() => {
         connectWebSocket();
+        return () => {
+            stompClient.current?.disconnect(() => {
+                console.info("Disconnected");
+            });
+        };
     }, [roomId]);
+
+    // Sending Message
+    const sendMessage = async () => {
+        if (!stompClient.current || !connected || !input.trim()) return;
+
+        const message = {
+            sender: currentUser,
+            content: input,
+        };
+
+        stompClient.current?.send(`/app/sendMessage/${roomId}`, {}, JSON.stringify(message));
+
+        setInput("");
+    };
+
     return (
         <div className="h-screen flex flex-col dark:bg-gray-800">
             {/* Header - Responsive */}
@@ -107,15 +125,15 @@ const ChatPage = () => {
             <div className="fixed bottom-2 sm:bottom-3 md:bottom-4 w-full px-2 sm:px-4 md:px-6">
                 <div className="h-12 sm:h-14 md:h-16 gap-2 sm:gap-3 md:gap-4 flex items-center justify-between rounded-full w-full sm:w-[85%] md:w-[70%] lg:w-1/2 mx-auto dark:bg-gray-900 px-2 sm:px-3 md:px-4 shadow-lg border dark:border-gray-700">
                     <input
-                        // value={input}
-                        // onChange={(e) => {
-                        //     setInput(e.target.value);
-                        // }}
-                        // onKeyDown={(e) => {
-                        //     if (e.key === "Enter") {
-                        //         sendMessage();
-                        //     }
-                        // }}
+                        value={input}
+                        onChange={(e) => {
+                            setInput(e.target.value);
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                sendMessage();
+                            }
+                        }}
                         type="text"
                         placeholder="Type your message..."
                         className="flex-1 dark:bg-transparent px-2 sm:px-3 py-1 sm:py-2 rounded-full h-full focus:outline-none text-sm sm:text-base placeholder:text-gray-400 dark:placeholder:text-gray-500"
@@ -126,7 +144,7 @@ const ChatPage = () => {
                             <MdAttachFile size={16} className="sm:text-lg md:text-xl" />
                         </button>
                         <button
-                            // onClick={sendMessage}
+                            onClick={sendMessage}
                             className="dark:bg-green-600 hover:dark:bg-green-700 h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 flex justify-center items-center rounded-full transition-colors duration-200"
                         >
                             <MdSend size={16} className="sm:text-lg md:text-xl" />

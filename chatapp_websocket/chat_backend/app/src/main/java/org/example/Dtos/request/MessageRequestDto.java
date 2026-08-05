@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class MessageRequestDto {
     private String content;
     private String sender;
-    private String roomId;
 }

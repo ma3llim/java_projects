@@ -10,8 +10,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
@@ -29,7 +27,7 @@ public class ChatController {
         Room room = roomRepository.findByRoomId(roomId).orElseThrow(()-> new RuntimeException("Room Not Found!!"));
 
         Message message = Message.builder().content(requestDto.getContent())
-                .sender(requestDto.getContent())
+                .sender(requestDto.getSender())
                 .build();
 
         room.getMessages().add(message);

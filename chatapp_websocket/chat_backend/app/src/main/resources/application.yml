@@ -3,7 +3,8 @@ spring:
     name: chat-app-backend
 
   data:
-    mongodb:uri= ${MONGO_URL}
+    mongodb:
+      uri: ${MONGO_URL}
 
 logging:
   level:
