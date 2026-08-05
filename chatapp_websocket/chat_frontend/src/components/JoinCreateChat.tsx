@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { createRoom } from "../services/RoomServices";
+import useChatContext from "../context/ChatContext";
+import { useNavigate } from "react-router";
 
 const JoinCreateChat = () => {
     const [detail, setDetails] = useState<IDetails>({ roomId: "", userName: "" });
+    const { roomId, currentUser, setRoomId, setCurrentUser, connected, setConnected } = useChatContext();
+    const navigate = useNavigate();
+
     const handleFormInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setDetails({
             ...detail,
@@ -21,7 +26,14 @@ const JoinCreateChat = () => {
         if (validateForm()) {
             try {
                 const result = await createRoom(detail);
+                console.log(result);
+
                 toast.success("Room created successfully!");
+                setCurrentUser(detail.userName);
+                setRoomId(result.roomId);
+                setConnected(true);
+
+                navigate("/chat");
             } catch (error: any) {
                 console.log(error.response);
                 toast.error(error.response.data);
