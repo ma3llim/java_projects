@@ -16,7 +16,7 @@ interface Message {
     status?: "sent" | "delivered" | "read";
 }
 const ChatPage = () => {
-    const { roomId, connected, currentUser } = useChatContext();
+    const { roomId, connected, currentUser, setConnected, setCurrentUser, setRoomId } = useChatContext();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>("");
     const stompClient = useRef<CompatClient | null>(null);
@@ -95,6 +95,16 @@ const ChatPage = () => {
         }
     }, [messages]);
 
+    const handleLogout = () => {
+        stompClient.current?.disconnect();
+
+        setConnected(false);
+        setCurrentUser("");
+        setRoomId("");
+
+        navigate("/");
+    };
+
     return (
         <div className="h-screen flex flex-col dark:bg-gray-800">
             {/* Header - Responsive */}
@@ -115,10 +125,7 @@ const ChatPage = () => {
 
                 {/* Leave room button */}
                 <div className="flex-none">
-                    <button
-                        // onClick={handleLogout}
-                        className="dark:bg-red-500 dark:hover:bg-red-700 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm transition-colors duration-200"
-                    >
+                    <button onClick={handleLogout} className="dark:bg-red-500 dark:hover:bg-red-700 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm transition-colors duration-200">
                         Leave Room
                     </button>
                 </div>
