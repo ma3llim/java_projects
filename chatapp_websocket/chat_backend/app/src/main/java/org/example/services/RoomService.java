@@ -1,5 +1,6 @@
 package org.example.services;
 
+import org.example.Dtos.request.RoomRequestDto;
 import org.example.entities.Message;
 import org.example.entities.Room;
 import org.example.repositories.RoomRepository;
@@ -19,12 +20,12 @@ public class RoomService {
         this.roomRepository = roomRepository;
     }
 
-    public ResponseEntity<?> createRoom(String roomId) {
-        if (roomRepository.findByRoomId(roomId).isPresent()){
+    public ResponseEntity<?> createRoom(RoomRequestDto roomData) {
+        if (roomRepository.findByRoomId(roomData.getRoomId()).isPresent()){
             return ResponseEntity.badRequest().body("Room Id is Already There!!");
         }
 
-        Room room = Room.builder().roomId(roomId).build();
+        Room room = Room.builder().roomId(roomData.getRoomId()).username(roomData.getUsername()).build();
         Room newRoom = roomRepository.save(room);
 
         return ResponseEntity.ok(newRoom);

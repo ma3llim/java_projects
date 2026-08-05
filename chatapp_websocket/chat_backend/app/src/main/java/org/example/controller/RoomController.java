@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.Dtos.request.RoomRequestDto;
 import org.example.entities.Message;
 import org.example.services.RoomService;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createRoom(@RequestBody String roomId){
-        return roomService.createRoom(roomId);
+    public ResponseEntity<?> createRoom(@RequestBody RoomRequestDto roomRequestDto){
+        return roomService.createRoom(roomRequestDto);
     }
 
     @GetMapping("/{roomId}")

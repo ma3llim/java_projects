@@ -20,6 +20,7 @@ public class Room {
     private String id;
 
     private String roomId;
+    private String username;
 
     @Builder.Default
     private List<Message> messages = new ArrayList<>();
