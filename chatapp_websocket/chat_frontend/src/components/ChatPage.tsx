@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import useChatContext from "../context/ChatContext";
 import { useNavigate } from "react-router";
+import SockJS from "sockjs-client";
+import { BASE_URL } from "../apis.Axios";
+import { Stomp } from "@stomp/stompjs";
+import { toast } from "react-toastify";
 
 interface Message {
     content: string;
@@ -20,7 +24,7 @@ const ChatPage = () => {
         },
     ]);
     const [input, setInput] = useState<string>("");
-    const [stompClient, setStompClient] = useState(null);
+    const [stompClient, setStompClient] = useState<unknown>(null);
     const inputRef = useRef(null);
     const chatBoxRef = useRef(null);
     const navigate = useNavigate();
@@ -31,6 +35,24 @@ const ChatPage = () => {
         }
     }, [connected]);
 
+    const connectWebSocket = () => {
+        // SockJS
+        const sock = new SockJS(`${BASE_URL}/chat`);
+        const client = Stomp.over(sock);
+        client.connect({}, () => {
+            setStompClient(client);
+            toast.success("Connected to chat!");
+
+            client.subscribe(`/topic/room/${roomId}`, (message: any) => {
+                const newMessage = JSON.parse(message.body);
+                setMessages((...prev) => [...prev, newMessage]);
+            });
+        });
+    };
+
+    useEffect(() => {
+        connectWebSocket();
+    }, [roomId]);
     return (
         <div className="h-screen flex flex-col dark:bg-gray-800">
             {/* Header - Responsive */}
