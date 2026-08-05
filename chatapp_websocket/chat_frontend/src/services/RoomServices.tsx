@@ -10,4 +10,9 @@ const joinChat = async (roomId: string) => {
     return response.data;
 };
 
-export { createRoom, joinChat };
+const getMessages = async (rooId: string) => {
+    const response = await Axios.get(`/rooms/${rooId}/messages`);
+    return response.data;
+};
+
+export { createRoom, joinChat, getMessages };
