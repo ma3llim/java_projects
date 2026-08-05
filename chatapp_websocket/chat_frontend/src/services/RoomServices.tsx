@@ -5,4 +5,9 @@ const createRoom = async (roomDetails: IDetails) => {
     return response.data;
 };
 
-export { createRoom };
+const joinChat = async (roomId: string) => {
+    const response = await Axios.get(`/rooms/${roomId}`);
+    return response.data;
+};
+
+export { createRoom, joinChat };

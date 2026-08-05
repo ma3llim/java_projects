@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { createRoom } from "../services/RoomServices";
+import { createRoom, joinChat } from "../services/RoomServices";
 import useChatContext from "../context/ChatContext";
 import { useNavigate } from "react-router";
 
 const JoinCreateChat = () => {
     const [detail, setDetails] = useState<IDetails>({ roomId: "", userName: "" });
-    const { roomId, currentUser, setRoomId, setCurrentUser, connected, setConnected } = useChatContext();
+    const { setRoomId, setCurrentUser, setConnected } = useChatContext();
     const navigate = useNavigate();
 
     const handleFormInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,6 +15,7 @@ const JoinCreateChat = () => {
             [e.target.name]: e.target.value,
         });
     };
+
     const validateForm = () => {
         if (detail.roomId === "" || detail.userName === "") {
             toast.error("Invalid Input !!");
@@ -41,9 +42,21 @@ const JoinCreateChat = () => {
         }
     };
 
-    const joinChat = () => {
+    const joinChatHandler = async () => {
         if (validateForm()) {
-            console.log(detail);
+            try {
+                const result = await joinChat(detail.roomId);
+                console.log(result);
+
+                toast.success("Room Join successfully!");
+                setCurrentUser(detail.userName);
+                setRoomId(result.roomId);
+                setConnected(true);
+                navigate("/chat");
+            } catch (error: any) {
+                console.log(error.response);
+                toast.error(error.response.data);
+            }
         }
     };
 
@@ -87,7 +100,7 @@ const JoinCreateChat = () => {
                 {/* Buttons */}
                 <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 mt-2 sm:mt-4">
                     <button
-                        onClick={joinChat}
+                        onClick={joinChatHandler}
                         className="px-4 sm:px-5 py-2 sm:py-2.5 dark:bg-blue-500 hover:dark:bg-blue-600 active:dark:bg-blue-700 rounded-full cursor-pointer transition-colors duration-200 text-sm sm:text-base w-full sm:w-auto"
                     >
                         Join Room
