@@ -14,6 +14,6 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/chat" element={<ChatPage />} />
             </Routes>
         </BrowserRouter>
-        <ToastContainer />
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover limit={3} theme="dark" />
     </StrictMode>,
 );

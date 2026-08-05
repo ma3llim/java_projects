@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { createRoom } from "../services/RoomServices";
 
-interface IDetails {
-    roomId: string;
-    userName: string;
-}
 const JoinCreateChat = () => {
     const [detail, setDetails] = useState<IDetails>({ roomId: "", userName: "" });
     const handleFormInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,9 +17,15 @@ const JoinCreateChat = () => {
         return true;
     };
 
-    const createRoom = () => {
+    const createRoomHandler = async () => {
         if (validateForm()) {
-            console.log(detail);
+            try {
+                const result = await createRoom(detail);
+                toast.success("Room created successfully!");
+            } catch (error: any) {
+                console.log(error.response);
+                toast.error(error.response.data);
+            }
         }
     };
 
@@ -78,7 +81,7 @@ const JoinCreateChat = () => {
                         Join Room
                     </button>
                     <button
-                        onClick={createRoom}
+                        onClick={createRoomHandler}
                         className="px-4 sm:px-5 py-2 sm:py-2.5 dark:bg-orange-500 hover:dark:bg-orange-600 active:dark:bg-orange-700 rounded-full cursor-pointer transition-colors duration-200 text-sm sm:text-base w-full sm:w-auto"
                     >
                         Create Room
