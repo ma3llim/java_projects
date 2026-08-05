@@ -7,6 +7,7 @@ import { BASE_URL } from "../apis.Axios";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import { toast } from "react-toastify";
 import { getMessages } from "../services/RoomServices";
+import { timeAgo } from "../utils/timeAgo";
 
 interface Message {
     content: string;
@@ -50,10 +51,12 @@ const ChatPage = () => {
     };
 
     useEffect(() => {
-        connectWebSocket();
-        if (!roomId) return;
+        if (connected) {
+            connectWebSocket();
+            if (!roomId) return;
 
-        chatMessages(roomId);
+            chatMessages(roomId);
+        }
         return () => {
             stompClient.current?.disconnect(() => {
                 console.info("Disconnected");
@@ -143,7 +146,7 @@ const ChatPage = () => {
                                 <div className="flex flex-col gap-1 min-w-0 flex-1">
                                     <p className="text-xs sm:text-sm font-bold break-words">{message.sender}</p>
                                     <p className="text-sm sm:text-base break-words">{message.content}</p>
-                                    {/* <p className="text-[10px] sm:text-xs text-gray-400">{timeAgo(message.timeStamp)}</p> */}
+                                    <p className="text-[10px] sm:text-xs text-gray-400">{message.timeStamp ? timeAgo(message.timeStamp) : ""}</p>
                                 </div>
                             </div>
                         </div>
