@@ -1,5 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdAttachFile, MdSend } from "react-icons/md";
+import useChatContext from "../context/ChatContext";
+import { useNavigate } from "react-router";
 
 interface Message {
     content: string;
@@ -9,6 +11,8 @@ interface Message {
     status?: "sent" | "delivered" | "read";
 }
 const ChatPage = () => {
+    const { roomId, connected, currentUser } = useChatContext();
+
     const [messages, setMessages] = useState<Message[]>([
         {
             content: "Hello ?",
@@ -17,22 +21,32 @@ const ChatPage = () => {
     ]);
     const [input, setInput] = useState<string>("");
     const [stompClient, setStompClient] = useState(null);
-
     const inputRef = useRef(null);
     const chatBoxRef = useRef(null);
-    const currentUser = "Sameer";
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!connected) {
+            navigate("/");
+        }
+    }, [connected]);
+
     return (
         <div className="h-screen flex flex-col dark:bg-gray-800">
             {/* Header - Responsive */}
             <header className="dark:border-gray-700 fixed w-full dark:bg-gray-900 py-3 sm:py-4 md:py-5 shadow flex flex-wrap justify-between sm:justify-around items-center px-3 sm:px-6 md:px-8 z-10">
                 {/* Room name container */}
                 <div className="flex-1 sm:flex-none">
-                    <h1 className="text-sm sm:text-base md:text-xl font-semibold truncate max-w-[120px] sm:max-w-none">Room :{/* <span>{roomId}</span> */}</h1>
+                    <h1 className="text-sm sm:text-base md:text-xl font-semibold truncate max-w-[120px] sm:max-w-none">
+                        Room :<span>{roomId}</span>
+                    </h1>
                 </div>
 
                 {/* Username container - hidden on mobile */}
                 <div className="hidden sm:block flex-1 sm:flex-none text-center">
-                    <h1 className="text-sm sm:text-base md:text-xl font-semibold">User : {/* <span>{currentUser}</span> */}</h1>
+                    <h1 className="text-sm sm:text-base md:text-xl font-semibold">
+                        User : <span>{currentUser}</span>
+                    </h1>
                 </div>
 
                 {/* Leave room button */}

@@ -27,7 +27,6 @@ const JoinCreateChat = () => {
         if (validateForm()) {
             try {
                 const result = await createRoom(detail);
-                console.log(result);
 
                 toast.success("Room created successfully!");
                 setCurrentUser(detail.userName);
@@ -36,7 +35,7 @@ const JoinCreateChat = () => {
 
                 navigate("/chat");
             } catch (error: any) {
-                console.log(error.response);
+                console.error(error.response);
                 toast.error(error.response.data);
             }
         }
@@ -46,15 +45,15 @@ const JoinCreateChat = () => {
         if (validateForm()) {
             try {
                 const result = await joinChat(detail.roomId);
-                console.log(result);
 
                 toast.success("Room Join successfully!");
                 setCurrentUser(detail.userName);
                 setRoomId(result.roomId);
                 setConnected(true);
+
                 navigate("/chat");
             } catch (error: any) {
-                console.log(error.response);
+                console.error(error.response);
                 toast.error(error.response.data);
             }
         }
