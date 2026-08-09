@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: rest-api-demo
+
+  # Active profile (can be dev, prod, test)
+  profiles:
+    active: dev
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+# Custom application properties
+app:
+  name: REST API Demo
+  version: 1.0.0
+
+# Logging configuration
+logging:
+  level:
+    com.example.restapidemo: DEBUG
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
