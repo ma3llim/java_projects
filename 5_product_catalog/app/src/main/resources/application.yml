@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: products
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:3306/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+  cache:
+    type: redis
+
+app:
+  pagination:
+    max-size: 20
+    default-size: 10
+
+  service:
+    name: product-catalog
+    version: 1.0.0
+
+  jwt:
+    secret: ${JWT_SECRET}
+    issuer: ${JWT_ISSUER}
+    access-ttl-seconds: ${ACCESS_TTL_SECONDS}
+    refresh-ttl-seconds: ${REFRESH_TTL_SECONDS}
+
+  cors:
+    allowed-origins:
+      - ${FRONTEND_URL}
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+    allowed-headers:
+      - "*"
+    allow-credentials: true
+    max-age: 3600
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger
+    url: /api-docs

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="com.mysqltableviewer.settings.MySQLSettingsState">
+    <option name="databaseConfigs">
+      <list>
+        <DatabaseConfig>
+          <option name="database" value="0000" />
+          <option name="password" value="0000" />
+        </DatabaseConfig>
+      </list>
+    </option>
+  </component>
+</project>
